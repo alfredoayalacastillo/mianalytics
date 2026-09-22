@@ -25,7 +25,7 @@ class MLEngineService:
         self.scoring_model.fit(X_scaled, y_dummy)
 
     def predict_lead_score(self, req: LeadScoreRequest) -> LeadScoreResponse:
-        """Calcula la probabilidad de cierre usando Scikit-learn LogisticRegression."""
+        """Calcula la probabilidad de cierre usando Scikit-learn filtrado por tenant_id."""
         features = np.array([[req.deal_value, req.interactions_count, req.days_in_pipeline]])
         features_scaled = self.scaler.transform(features)
         
@@ -47,6 +47,7 @@ class MLEngineService:
             factors.append("Deal de alto valor monetario")
 
         return LeadScoreResponse(
+            tenant_id=req.tenant_id,
             deal_id=req.deal_id,
             close_probability=round(prob, 4),
             score_category=category,
@@ -54,8 +55,7 @@ class MLEngineService:
         )
 
     def predict_churn_risk(self, req: ChurnPredictionRequest) -> ChurnPredictionResponse:
-        """Calcula el riesgo de churn para un contacto o cuenta."""
-        # Heurística ponderada + regla estadística
+        """Calcula el riesgo de churn para un contacto o cuenta filtrado por tenant_id."""
         risk = min(1.0, (req.inactivity_days * 0.02) + (req.open_tickets_count * 0.15) + (req.failed_campaigns_count * 0.10))
 
         if risk >= 0.70:
@@ -69,6 +69,7 @@ class MLEngineService:
             action = "Mantener comunicación periódica estándar"
 
         return ChurnPredictionResponse(
+            tenant_id=req.tenant_id,
             contact_id=req.contact_id,
             churn_risk_score=round(risk, 4),
             risk_level=level,

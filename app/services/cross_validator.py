@@ -5,8 +5,7 @@ from app.models.schemas import CrossValidationRequest, CrossValidationResponse
 
 class CrossValidatorService:
     def run_cross_validation(self, req: CrossValidationRequest) -> CrossValidationResponse:
-        """Ejecuta Validación Cruzada K-Fold con Scikit-learn sobre un dataset."""
-        # Dataset sintético/simulado de entrenamiento hasta conectar tablas reales de Corteza
+        """Ejecuta Validación Cruzada K-Fold con Scikit-learn sobre un dataset del tenant."""
         np.random.seed(42)
         n_samples = 100
         X = np.random.randn(n_samples, 4)
@@ -18,6 +17,7 @@ class CrossValidatorService:
         scores = cross_val_score(model, X, y, cv=skf, scoring='accuracy')
 
         return CrossValidationResponse(
+            tenant_id=req.tenant_id,
             dataset_name=req.dataset_name,
             n_splits=req.n_splits,
             mean_accuracy=round(float(scores.mean()), 4),
