@@ -1,4 +1,3 @@
-import os
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 class Settings(BaseSettings):
@@ -6,10 +5,10 @@ class Settings(BaseSettings):
     ENVIRONMENT: str = "development"
     PORT: int = 8000
     LOG_LEVEL: str = "info"
-    INTERNAL_API_KEY: str = "mianalytics-secret-key-change-in-production"
+    INTERNAL_API_KEY: str
     
     # PostgreSQL & pgvector settings
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/corteza"
+    DATABASE_URL: str
     POSTGRES_READ_ONLY: bool = True
 
     model_config = SettingsConfigDict(
